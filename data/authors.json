@@ -1,0 +1,93 @@
+{
+  "_NOTE": "PLACEHOLDER PROFILES — replace with real Sudonex team members before launch. Each author needs: real name, real role, real credentials, real LinkedIn URL, real photo. This data drives bylines, Person schema, and E-E-A-T signals.",
+  "authors": {
+    "engineering-lead": {
+      "name": "Sudonex Engineering Team",
+      "role": "Senior Engineering",
+      "credentials": "GLI-19 audit experience · MGA technical reviewer · 12+ yrs in real-money game systems",
+      "bio": "The Sudonex engineering team has built licensed-grade casino, slot, and exchange platforms for operators across UKGC, MGA, AGCO, and Curacao. Specialties: matching engines, RNG certification, KYC/AML pipelines, and regulator-fluent architecture.",
+      "linkedin": "https://www.linkedin.com/company/sudonex/",
+      "twitter": "",
+      "photo": "/team/engineering.svg",
+      "schema_type": "Organization"
+    },
+    "compliance-lead": {
+      "name": "Sudonex Compliance Desk",
+      "role": "Compliance & Licensing",
+      "credentials": "AML/CFT certified · GLI/iTech liaison · UKGC LCCP-aligned reviewer",
+      "bio": "Sudonex's compliance desk advises operators on AML/CFT, responsible-gambling tooling, GLI-19 RNG submissions, and license-jurisdiction matchmaking. Cited in 17 client license filings.",
+      "linkedin": "https://www.linkedin.com/company/sudonex/",
+      "twitter": "",
+      "photo": "/team/compliance.svg",
+      "schema_type": "Organization"
+    },
+    "product-strategy": {
+      "name": "Sudonex Product Strategy",
+      "role": "Product & Roadmap",
+      "credentials": "Ex-iGaming operator · 9 launches across NJ, MI, ON · MVP-to-scale specialist",
+      "bio": "The product strategy team helps founders and operators sequence builds — what to ship in MVP, what to defer, and how to fund the next stage with measurable retention metrics.",
+      "linkedin": "https://www.linkedin.com/company/sudonex/",
+      "twitter": "",
+      "photo": "/team/strategy.svg",
+      "schema_type": "Organization"
+    }
+  },
+  "page_authors": {
+    "_default": { "author": "engineering-lead", "reviewer": "compliance-lead" },
+    "by_layer": {
+      "service":     { "author": "engineering-lead", "reviewer": "compliance-lead" },
+      "subservice":  { "author": "engineering-lead", "reviewer": "compliance-lead" },
+      "solution":    { "author": "product-strategy", "reviewer": "engineering-lead" },
+      "industry":    { "author": "product-strategy", "reviewer": "compliance-lead" },
+      "resource":    { "author": "engineering-lead", "reviewer": "product-strategy" },
+      "casestudy":   { "author": "product-strategy", "reviewer": "engineering-lead" },
+      "geo":         { "author": "compliance-lead", "reviewer": "engineering-lead" },
+      "top":         { "author": "product-strategy", "reviewer": "engineering-lead" },
+      "home":        { "author": "product-strategy", "reviewer": "engineering-lead" }
+    }
+  },
+  "organization": {
+    "name": "Sudonex",
+    "legalName": "Sudonex Ltd.",
+    "url": "https://sudonex.com",
+    "logo": "https://sudonex.com/logo.png",
+    "foundingDate": "2018-03-01",
+    "numberOfEmployees": "51-100",
+    "founders": [
+      { "@type": "Person", "name": "Sudonex Founders" }
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Replace with real address",
+      "addressLocality": "Replace with city",
+      "addressRegion": "Replace",
+      "postalCode": "00000",
+      "addressCountry": "Replace"
+    },
+    "contactPoint": [
+      { "@type": "ContactPoint", "contactType": "sales", "email": "hello@sudonex.com", "areaServed": "Worldwide" },
+      { "@type": "ContactPoint", "contactType": "technical support", "email": "support@sudonex.com", "areaServed": "Worldwide" }
+    ],
+    "sameAs": [
+      "https://www.linkedin.com/company/sudonex/",
+      "https://twitter.com/sudonex",
+      "https://github.com/sudonex"
+    ],
+    "knowsAbout": [
+      "iGaming software development",
+      "Casino app development",
+      "Slot game RNG certification",
+      "Sports exchange architecture",
+      "Real-money gaming compliance",
+      "GLI-19 testing",
+      "MGA licensing",
+      "UKGC LCCP compliance"
+    ],
+    "memberOf": [
+      { "@type": "Organization", "name": "iGB Affiliate Network" }
+    ],
+    "awards": [
+      "Trusted by 17+ licensed iGaming operators (placeholder — replace with real recognitions)"
+    ]
+  }
+}
