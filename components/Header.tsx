@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { NAV } from '@/lib/content';
+import { useContactModal } from '@/components/ContactModal';
 
 const MEGA = [
   { key: 'services', label: 'Services', items: NAV.services, color: 'from-brand-500 to-cyan-500' },
@@ -15,6 +16,7 @@ export default function Header() {
   const [open, setOpen] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { openModal } = useContactModal();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -55,7 +57,12 @@ export default function Header() {
           <Link href="/resources/" className="px-3 py-2 text-sm text-ink-muted hover:text-ink transition-colors">Resources</Link>
           <Link href="/case-studies/" className="px-3 py-2 text-sm text-ink-muted hover:text-ink transition-colors">Case Studies</Link>
           <Link href="/about-us/" className="px-3 py-2 text-sm text-ink-muted hover:text-ink transition-colors">About</Link>
-          <Link href="/contact/" className="ml-2 btn-primary text-sm py-2 px-4">Contact</Link>
+          <button
+            onClick={openModal}
+            className="ml-2 btn-primary text-sm py-2 px-4 cursor-pointer"
+          >
+            Contact
+          </button>
         </nav>
 
         <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden p-2 text-ink">
@@ -70,7 +77,15 @@ export default function Header() {
               {[...NAV.services, ...NAV.solutions, ...NAV.industries].map(it => (
                 <Link key={it.path} href={it.path} onClick={() => setMobileOpen(false)} className="block py-2.5 text-ink-muted hover:text-ink">{it.label}</Link>
               ))}
-              <Link href="/contact/" onClick={() => setMobileOpen(false)} className="btn-primary mt-4 w-full justify-center">Contact</Link>
+              <button
+                onClick={() => {
+                  setMobileOpen(false);
+                  openModal();
+                }}
+                className="btn-primary mt-4 w-full justify-center cursor-pointer"
+              >
+                Contact
+              </button>
             </div>
           </motion.div>
         )}

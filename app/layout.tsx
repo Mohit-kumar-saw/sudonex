@@ -3,6 +3,7 @@ import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { organizationSchema } from '@/lib/authors';
+import { ContactModalProvider } from '@/components/ContactModal';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://sudonex.com'),
@@ -24,9 +25,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         }) }} />
       </head>
       <body className="antialiased">
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <ContactModalProvider>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </ContactModalProvider>
       </body>
     </html>
   );

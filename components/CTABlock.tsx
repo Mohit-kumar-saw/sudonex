@@ -2,8 +2,10 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, MessageSquare } from 'lucide-react';
+import { useContactModal } from '@/components/ContactModal';
 
 export default function CTABlock() {
+  const { openModal } = useContactModal();
   return (
     <section className="relative py-20">
       <div className="max-w-5xl mx-auto px-6">
@@ -19,7 +21,7 @@ export default function CTABlock() {
             <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">Ready to build something operators trust?</h2>
             <p className="text-ink-muted max-w-2xl mx-auto mb-8">Tell us about your build — region, licensing, timeline, budget. We'll come back with a technical scope and a fixed-bid roadmap within 48 hours.</p>
             <div className="flex flex-wrap justify-center gap-3">
-              <Link href="/contact/" className="btn-primary">Book a discovery call <ArrowRight size={16} /></Link>
+              <button onClick={openModal} className="btn-primary cursor-pointer">Book a discovery call <ArrowRight size={16} /></button>
               <Link href="/case-studies/" className="btn-secondary">See client work</Link>
             </div>
           </div>

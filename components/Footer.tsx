@@ -1,6 +1,8 @@
+'use client';
 import Link from 'next/link';
 import { NAV } from '@/lib/content';
-import { Mail, MapPin, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { Mail, MapPin, ShieldCheck, AlertTriangle, Phone } from 'lucide-react';
+import { useContactModal } from '@/components/ContactModal';
 
 const cols = [
   { title: 'Services', items: NAV.services },
@@ -10,6 +12,8 @@ const cols = [
 ];
 
 export default function Footer() {
+  const { openModal } = useContactModal();
+
   return (
     <footer className="relative mt-32 border-t border-white/5 bg-bg-deep overflow-hidden">
       <div className="orb orb-purple w-[500px] h-[500px] -top-40 -left-40" />
@@ -24,7 +28,8 @@ export default function Footer() {
             </Link>
             <p className="text-sm text-ink-muted leading-relaxed mb-4">iGaming development built for operators who take compliance seriously. Founded 2018.</p>
             <ul className="space-y-2 text-xs text-ink-muted">
-              <li className="flex items-center gap-2"><Mail size={12} /> <a href="mailto:hello@sudonex.com" className="hover:text-ink">hello@sudonex.com</a></li>
+              <li className="flex items-center gap-2"><Mail size={12} /> <a href="mailto:Sudonexofficial@gmail.com" className="hover:text-ink">Sudonexofficial@gmail.com</a></li>
+              <li className="flex items-center gap-2"><Phone size={12} /> <a href="tel:+919691684577" className="hover:text-ink">+91 9691684577</a></li>
               <li className="flex items-center gap-2"><MapPin size={12} /> Global delivery · 17 jurisdictions</li>
             </ul>
           </div>
@@ -77,7 +82,7 @@ export default function Footer() {
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-ink-dim">
             <Link href="/about-us/" className="hover:text-ink">About</Link>
             <Link href="/resources/" className="hover:text-ink">Resources</Link>
-            <Link href="/contact/" className="hover:text-ink">Contact</Link>
+            <button onClick={openModal} className="hover:text-ink cursor-pointer">Contact</button>
             <Link href="/about-us/#privacy" className="hover:text-ink">Privacy</Link>
             <Link href="/about-us/#terms" className="hover:text-ink">Terms</Link>
           </div>

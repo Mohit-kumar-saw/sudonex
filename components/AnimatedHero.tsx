@@ -2,11 +2,18 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, ShieldCheck, Cpu } from 'lucide-react';
+import { useContactModal } from '@/components/ContactModal';
 
 export default function AnimatedHero({
   eyebrow, title, subtitle, primaryCta, secondaryCta,
 }: { eyebrow?: string; title: string; subtitle?: string; primaryCta?: { label: string; href: string }; secondaryCta?: { label: string; href: string }; }) {
   const words = title.split(' ');
+  const { openModal } = useContactModal();
+
+  const isContactHref = (href: string) => {
+    return href.replace(/\/$/, '') === '/contact';
+  };
+
   return (
     <section className="relative overflow-hidden pt-12 lg:pt-20 pb-16">
       {/* Animated mesh + orbs */}
@@ -35,8 +42,24 @@ export default function AnimatedHero({
             className="max-w-2xl mx-auto text-lg text-ink-muted leading-relaxed mb-8">{subtitle}</motion.p>
         )}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }} className="flex flex-wrap justify-center gap-3">
-          {primaryCta && <Link href={primaryCta.href} className="btn-primary">{primaryCta.label} <ArrowRight size={16} /></Link>}
-          {secondaryCta && <Link href={secondaryCta.href} className="btn-secondary">{secondaryCta.label}</Link>}
+          {primaryCta && (
+            isContactHref(primaryCta.href) ? (
+              <button onClick={openModal} className="btn-primary cursor-pointer">
+                {primaryCta.label} <ArrowRight size={16} />
+              </button>
+            ) : (
+              <Link href={primaryCta.href} className="btn-primary">{primaryCta.label} <ArrowRight size={16} /></Link>
+            )
+          )}
+          {secondaryCta && (
+            isContactHref(secondaryCta.href) ? (
+              <button onClick={openModal} className="btn-secondary cursor-pointer">
+                {secondaryCta.label}
+              </button>
+            ) : (
+              <Link href={secondaryCta.href} className="btn-secondary">{secondaryCta.label}</Link>
+            )
+          )}
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }} className="mt-12 flex flex-wrap justify-center gap-6 text-xs text-ink-dim">
