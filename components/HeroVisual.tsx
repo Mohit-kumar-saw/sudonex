@@ -16,6 +16,10 @@ const SCENES: Record<HeroVisualVariant, ReturnType<typeof dynamic>> = {
   wave: dynamic(() => import('@/components/hero-scenes/HeroWaveScene'), { ssr: false, loading }),
   contact: dynamic(() => import('@/components/hero-scenes/HeroContactScene'), { ssr: false, loading }),
   about: dynamic(() => import('@/components/hero-scenes/HeroAboutScene'), { ssr: false, loading }),
+  services: dynamic(() => import('@/components/hero-scenes/HeroServicesScene'), { ssr: false, loading }),
+  solutions: dynamic(() => import('@/components/hero-scenes/HeroSolutionsScene'), { ssr: false, loading }),
+  industries: dynamic(() => import('@/components/hero-scenes/HeroIndustriesScene'), { ssr: false, loading }),
+  work: dynamic(() => import('@/components/hero-scenes/HeroWorkScene'), { ssr: false, loading }),
 };
 
 export default function HeroVisual({ variant = 'globe' }: { variant?: HeroVisualVariant }) {

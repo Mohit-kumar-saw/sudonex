@@ -6,12 +6,17 @@ export function HeroFallback({ variant }: { variant: string }) {
   const wave = variant === 'wave';
   const contact = variant === 'contact';
   const about = variant === 'about';
+  const services = variant === 'services';
+  const solutions = variant === 'solutions';
+  const industries = variant === 'industries';
+  const work = variant === 'work';
+  const noSpin = orbit || helix || contact || about || services || solutions || industries || work;
 
   return (
     <div className="relative w-full max-w-[420px] aspect-square mx-auto flex items-center justify-center">
       <svg
         viewBox="0 0 200 200"
-        className={`w-[85%] h-[85%] ${orbit || helix || contact || about ? '' : 'animate-[spin_48s_linear_infinite]'}`}
+        className={`w-[85%] h-[85%] ${noSpin ? '' : 'animate-[spin_48s_linear_infinite]'}`}
         aria-hidden
       >
         {orbit && (
@@ -94,7 +99,81 @@ export function HeroFallback({ variant }: { variant: string }) {
             <circle cx="152" cy="38" r="5" fill="rgba(255,133,51,0.8)" />
           </>
         )}
-        {!orbit && !network && !helix && !arcs && !wave && !contact && !about && (
+        {services && (
+          <>
+            <line x1="48" y1="42" x2="48" y2="158" stroke="rgba(255,102,0,0.45)" strokeWidth="0.8" />
+            {[52, 68, 84, 100, 116, 132, 148].map((y, i) => (
+              <rect
+                key={y}
+                x={58 + (i % 2) * 4}
+                y={y}
+                width={84 - i * 4}
+                height="10"
+                fill="rgba(51,20,0,0.75)"
+                stroke="rgba(255,102,0,0.55)"
+                strokeWidth="0.7"
+              />
+            ))}
+            <circle cx="42" cy="100" r="10" fill="none" stroke="rgba(255,133,51,0.5)" strokeWidth="0.7" />
+          </>
+        )}
+        {solutions && (
+          <>
+            <rect x="82" y="82" width="36" height="36" fill="rgba(51,20,0,0.75)" stroke="rgba(255,133,51,0.75)" strokeWidth="1" />
+            {[0, 60, 120, 180, 240, 300].map((deg, i) => {
+              const rad = (deg * Math.PI) / 180;
+              const x = 100 + Math.cos(rad) * 52;
+              const y = 100 + Math.sin(rad) * 30;
+              return (
+                <g key={i}>
+                  <line x1="100" y1="100" x2={x} y2={y} stroke="rgba(255,102,0,0.3)" strokeWidth="0.6" />
+                  <polygon
+                    points={`${x},${y - 10} ${x + 9},${y + 5} ${x - 9},${y + 5}`}
+                    fill="rgba(51,20,0,0.7)"
+                    stroke="rgba(255,102,0,0.55)"
+                    strokeWidth="0.7"
+                  />
+                </g>
+              );
+            })}
+            <ellipse cx="100" cy="100" rx="62" ry="36" fill="none" stroke="rgba(153,61,0,0.35)" strokeWidth="0.6" />
+          </>
+        )}
+        {industries && (
+          <>
+            <circle cx="100" cy="100" r="14" fill="rgba(255,102,0,0.2)" stroke="rgba(255,133,51,0.6)" strokeWidth="0.9" />
+            <circle cx="100" cy="100" r="58" fill="none" stroke="rgba(153,61,0,0.35)" strokeWidth="0.6" />
+            {[0, 60, 120, 180, 240, 300].map((deg, i) => {
+              const rad = (deg * Math.PI) / 180;
+              const len = 22 + (i % 3) * 10;
+              const x2 = 100 + Math.cos(rad) * len;
+              const y2 = 100 + Math.sin(rad) * len;
+              return (
+                <g key={i}>
+                  <line x1="100" y1="100" x2={x2} y2={y2} stroke="rgba(255,102,0,0.35)" strokeWidth="0.7" />
+                  <circle cx={x2} cy={y2} r="4" fill="rgba(255,133,51,0.7)" />
+                </g>
+              );
+            })}
+            <path
+              d="M100,100 L155,85 A58,58 0 0,1 100,100 Z"
+              fill="rgba(255,102,0,0.1)"
+            />
+          </>
+        )}
+        {work && (
+          <>
+            <rect x="68" y="72" width="64" height="44" rx="3" fill="rgba(51,20,0,0.8)" stroke="rgba(255,133,51,0.8)" strokeWidth="1" />
+            <rect x="74" y="78" width="52" height="8" fill="rgba(255,102,0,0.45)" />
+            <line x1="78" y1="94" x2="122" y2="94" stroke="rgba(153,61,0,0.5)" strokeWidth="0.6" />
+            <line x1="78" y1="102" x2="110" y2="102" stroke="rgba(153,61,0,0.4)" strokeWidth="0.5" />
+            <line x1="78" y1="110" x2="118" y2="110" stroke="rgba(153,61,0,0.4)" strokeWidth="0.5" />
+            <circle cx="124" cy="76" r="4" fill="rgba(255,133,51,0.8)" />
+            <rect x="48" y="88" width="40" height="30" rx="2" fill="rgba(51,20,0,0.55)" stroke="rgba(255,102,0,0.35)" strokeWidth="0.6" transform="rotate(-12 68 103)" />
+            <rect x="112" y="88" width="40" height="30" rx="2" fill="rgba(51,20,0,0.55)" stroke="rgba(255,102,0,0.35)" strokeWidth="0.6" transform="rotate(12 132 103)" />
+          </>
+        )}
+        {!orbit && !network && !helix && !arcs && !wave && !contact && !about && !services && !solutions && !industries && !work && (
           <>
             <circle cx="100" cy="100" r="78" fill="none" stroke="rgba(255,102,0,0.35)" strokeWidth="0.8" />
             <ellipse cx="100" cy="100" rx="78" ry="24" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
