@@ -25,6 +25,7 @@ export default function Home() {
         subtitle="Sudonex builds casino apps, slot games, sports exchanges and the entire compliance + payments stack around them. Built once, built right — by a team fluent in MGA, UKGC, GLI-19 and the math behind real-money games."
         primaryCta={{ label: 'Start your build', href: '/contact/' }}
         secondaryCta={{ label: 'Explore services', href: '/services/' }}
+        visual="globe"
       />
       <Stats />
       <ServiceCards />

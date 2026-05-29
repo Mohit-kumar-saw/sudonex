@@ -1,11 +1,19 @@
 'use client';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import HeroGlobe from '@/components/HeroGlobe';
+import HeroVisual from '@/components/HeroVisual';
+import type { HeroVisualVariant } from '@/lib/hero-visual';
 import { ArrowRight, Sparkles, ShieldCheck, Cpu } from 'lucide-react';
 export default function AnimatedHero({
-  eyebrow, title, subtitle, primaryCta, secondaryCta,
-}: { eyebrow?: string; title: string; subtitle?: string; primaryCta?: { label: string; href: string }; secondaryCta?: { label: string; href: string }; }) {
+  eyebrow, title, subtitle, primaryCta, secondaryCta, visual = 'globe',
+}: {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+  visual?: HeroVisualVariant;
+}) {
   const words = title.split(' ');
   const highlightStart = Math.floor(words.length / 2);
 
@@ -86,14 +94,14 @@ export default function AnimatedHero({
             </motion.div>
           </div>
 
-          {/* Right: rotating globe */}
+          {/* Right: page-specific 3D visual */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
             className="relative flex items-center justify-center"
           >
-            <HeroGlobe />
+            <HeroVisual variant={visual} />
           </motion.div>
         </div>
       </div>

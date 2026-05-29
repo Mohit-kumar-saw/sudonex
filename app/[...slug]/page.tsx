@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getAllPaths, getPage } from '@/lib/content';
+import { getHeroVisual } from '@/lib/hero-visual';
 import AnimatedHero from '@/components/AnimatedHero';
 import ArticleBody from '@/components/ArticleBody';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -8,6 +9,7 @@ import RelatedLinks from '@/components/RelatedLinks';
 import FAQAccordion from '@/components/FAQAccordion';
 import CTABlock from '@/components/CTABlock';
 import GeoStrip from '@/components/GeoStrip';
+import ContactForm from '@/components/ContactForm';
 import Citations from '@/components/Citations';
 import EditorialStandards from '@/components/EditorialStandards';
 import { authorsForPath, organizationSchema, personSchema } from '@/lib/authors';
@@ -102,20 +104,35 @@ export default async function Page({ params }: { params: Promise<{ slug: string[
         eyebrow={eyebrow}
         title={page.h1}
         subtitle={page.meta_description}
-        primaryCta={{ label: 'Talk to engineering', href: '/contact/' }}
-        secondaryCta={page.layer !== 'resource' ? { label: 'See related work', href: '/case-studies/' } : undefined}
+        visual={getHeroVisual(page.path, page.layer)}
+        primaryCta={
+          page.path === '/contact/'
+            ? undefined
+            : { label: 'Talk to engineering', href: '/contact/' }
+        }
+        secondaryCta={
+          page.path === '/contact/'
+            ? undefined
+            : page.layer !== 'resource'
+              ? { label: 'See related work', href: '/case-studies/' }
+              : undefined
+        }
       />
 
-      <ArticleBody html={page.body_html} toc={page.toc} />
+      {page.path === '/contact/' ? (
+        <ContactForm />
+      ) : (
+        <ArticleBody html={page.body_html} toc={page.toc} />
+      )}
 
       {isArticle && <Citations cluster={page.cluster} />}
 
       {page.path === '/about-us/' && <EditorialStandards />}
 
       {page.outbound_links.length > 0 && <RelatedLinks links={page.outbound_links} />}
-      {(page.layer === 'service' || page.layer === 'top') && <GeoStrip />}
+      {(page.layer === 'service' || page.layer === 'top') && page.path !== '/contact/' && <GeoStrip />}
       {page.faqs.length > 0 && <FAQAccordion items={page.faqs} />}
-      <CTABlock />
+      {page.path !== '/contact/' && <CTABlock />}
     </>
   );
 }
