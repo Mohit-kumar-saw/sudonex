@@ -29,10 +29,15 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      document.body.classList.remove('nav-mega-open');
+      return;
+    }
+    document.body.classList.add('nav-mega-open');
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
+      document.body.classList.remove('nav-mega-open');
       document.body.style.overflow = prev;
     };
   }, [open]);
@@ -47,7 +52,7 @@ export default function Header() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
+          transition={{ duration: 0.65, ease: [0.12, 1, 0.25, 1] }}
           className="fixed inset-0 top-16 z-[48] hidden lg:block nav-mega-backdrop"
           onClick={() => setOpen(null)}
         />
@@ -57,40 +62,25 @@ export default function Header() {
     <div className="sticky top-0 z-50" onMouseLeave={() => setOpen(null)}>
     <header
       className={`transition-all ${
-        open ? 'bg-white shadow-md' : scrolled ? 'glass shadow-lg' : 'bg-transparent'
+        open || scrolled ? 'glass shadow-lg' : 'bg-transparent'
       }`}
     >
       <div
         className={`max-w-7xl mx-auto px-6 h-16 flex items-center justify-between ${
-          open ? 'border-b border-neutral-200' : ''
+          open ? 'border-b border-white/[0.08]' : ''
         }`}
       >
-        <Logo lightBg={!!open} />
+        <Logo />
 
         <nav className="hidden lg:flex items-center gap-1 h-full">
-          <Link
-            href="/"
-            className={`px-3 py-2 text-sm transition-colors ${
-              open ? 'text-neutral-700 hover:text-brand-500' : 'text-white hover:text-brand-400'
-            }`}
-          >
+          <Link href="/" className="px-3 py-2 text-sm text-white hover:text-brand-400 transition-colors">
             Home
           </Link>
-          <Link
-            href="/about-us/"
-            className={`px-3 py-2 text-sm transition-colors ${
-              open ? 'text-neutral-700 hover:text-brand-500' : 'text-white hover:text-brand-400'
-            }`}
-          >
+          <Link href="/about-us/" className="px-3 py-2 text-sm text-white hover:text-brand-400 transition-colors">
             About
           </Link>
           <NavMegaTriggers groups={MEGA_GROUPS} open={open} setOpen={setOpen} />
-          <Link
-            href="/case-studies/"
-            className={`px-3 py-2 text-sm transition-colors ${
-              open ? 'text-neutral-700 hover:text-brand-500' : 'text-white hover:text-brand-400'
-            }`}
-          >
+          <Link href="/case-studies/" className="px-3 py-2 text-sm text-white hover:text-brand-400 transition-colors">
             Work
           </Link>
           <Link href="/contact/" className="btn-primary ml-2 py-2 px-4 text-sm">

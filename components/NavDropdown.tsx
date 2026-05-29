@@ -113,22 +113,14 @@ export function NavMegaTriggers({
           type="button"
           onMouseEnter={() => setOpen(g.key)}
           className={`relative px-3 py-2 text-sm inline-flex items-center gap-1.5 transition-colors whitespace-nowrap ${
-            open
-              ? open === g.key
-                ? 'text-brand-500 font-medium'
-                : 'text-neutral-600 hover:text-brand-500'
-              : 'text-white hover:text-brand-400'
+            open === g.key ? 'text-brand-500 font-medium' : 'text-white hover:text-brand-400'
           }`}
         >
           {g.label}
           <ChevronDown
             size={14}
             className={`transition-transform duration-200 ${
-              open === g.key
-                ? 'rotate-180 text-brand-500'
-                : open
-                  ? 'text-neutral-400'
-                  : 'text-ink-dim'
+              open === g.key ? 'rotate-180 text-brand-500' : 'text-ink-dim'
             }`}
           />
           {open === g.key && (
@@ -153,18 +145,18 @@ function MegaItem({ path, label }: NavItem) {
         <Icon size={18} strokeWidth={1.75} />
       </span>
       <span className="min-w-0 flex-1 pr-4">
-        <span className="block text-sm font-semibold text-neutral-900 group-hover:text-brand-500 transition-colors">
+        <span className="block text-sm font-semibold text-white group-hover:text-brand-500 transition-colors">
           {label}
         </span>
         {desc && (
-          <span className="block text-xs text-neutral-500 leading-relaxed mt-1 line-clamp-2 group-hover:text-neutral-600">
+          <span className="block text-xs text-ink-muted leading-relaxed mt-1 line-clamp-2 group-hover:text-ink-dim">
             {desc}
           </span>
         )}
       </span>
       <ArrowUpRight
         size={16}
-        className="shrink-0 text-neutral-400 group-hover:text-brand-500 transition-colors"
+        className="shrink-0 text-ink-dim group-hover:text-brand-500 transition-colors"
       />
     </Link>
   );
@@ -188,10 +180,10 @@ export function NavMegaPanel({
       {open && (
         <motion.div
           key={active.key}
-          initial={{ opacity: 0, y: -12 }}
+          initial={{ opacity: 0, y: -14 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.72, ease: [0.12, 1, 0.25, 1] }}
           className="hidden lg:block fixed left-0 right-0 top-16 z-[51] nav-mega-panel"
         >
           <div className="max-w-7xl mx-auto px-6 py-8">
@@ -200,15 +192,15 @@ export function NavMegaPanel({
                 <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-brand-500 mb-1">
                   {active.label}
                 </p>
-                <p className="text-sm text-neutral-500 mb-6 max-w-xl">{active.tagline}</p>
+                <p className="text-sm text-ink-muted mb-6 max-w-xl">{active.tagline}</p>
 
-                <div className="grid sm:grid-cols-2 gap-x-10">
-                  <div>
+                <div className="grid sm:grid-cols-2 gap-x-6">
+                  <div className="space-y-0.5">
                     {colA.map(it => (
                       <MegaItem key={it.path} {...it} />
                     ))}
                   </div>
-                  <div>
+                  <div className="space-y-0.5">
                     {colB.map(it => (
                       <MegaItem key={it.path} {...it} />
                     ))}
@@ -216,7 +208,7 @@ export function NavMegaPanel({
                 </div>
               </div>
 
-              <div className="col-span-12 lg:col-span-4 lg:border-l lg:border-neutral-200 lg:pl-10">
+              <div className="col-span-12 lg:col-span-4 lg:border-l lg:border-white/[0.08] lg:pl-10">
                 <div className="nav-mega-featured h-full min-h-[240px] flex flex-col justify-end p-6 rounded-2xl relative overflow-hidden">
                   <div className="nav-mega-featured-glow" />
                   <p className="relative text-lg font-display font-bold text-white leading-snug mb-2">
