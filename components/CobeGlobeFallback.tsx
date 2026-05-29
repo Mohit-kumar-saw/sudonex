@@ -4,15 +4,17 @@ import { useEffect, useRef } from 'react';
 import createGlobe from 'cobe';
 import type { GeoMarket } from '@/lib/geo-markets';
 import { coordsToAngles } from '@/lib/geo-markets';
+import { probeWebGL } from '@/lib/webgl';
 
 interface CobeGlobeFallbackProps {
   markets: GeoMarket[];
   activeSlug: string | null;
   size: number;
+  onFailed?: () => void;
 }
 
 /** Same dotted-globe look when Three.js WebGL is unavailable */
-export default function CobeGlobeFallback({ markets, activeSlug, size }: CobeGlobeFallbackProps) {
+export default function CobeGlobeFallback({ markets, activeSlug, size, onFailed }: CobeGlobeFallbackProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const activeRef = useRef(activeSlug);
   const marketsRef = useRef(markets);
@@ -23,6 +25,12 @@ export default function CobeGlobeFallback({ markets, activeSlug, size }: CobeGlo
   useEffect(() => {
     if (!canvasRef.current || size <= 0) return;
 
+    if (!probeWebGL()) {
+      onFailed?.();
+      return;
+    }
+
+    const canvas = canvasRef.current;
     let phi = 0;
     let theta = 0.25;
     let targetPhi = 0;
@@ -30,7 +38,9 @@ export default function CobeGlobeFallback({ markets, activeSlug, size }: CobeGlo
     let pointerInteracting: number | null = null;
     let rafId = 0;
 
-    const globe = createGlobe(canvasRef.current, {
+    let globe: ReturnType<typeof createGlobe>;
+    try {
+      globe = createGlobe(canvas, {
       devicePixelRatio: Math.min(2, window.devicePixelRatio || 1),
       width: size * 2,
       height: size * 2,
@@ -47,6 +57,10 @@ export default function CobeGlobeFallback({ markets, activeSlug, size }: CobeGlo
       markerElevation: 0.02,
       markers: [],
     });
+    } catch {
+      onFailed?.();
+      return;
+    }
 
     const tick = () => {
       const active = activeRef.current;
@@ -77,7 +91,6 @@ export default function CobeGlobeFallback({ markets, activeSlug, size }: CobeGlo
 
     rafId = requestAnimationFrame(tick);
 
-    const canvas = canvasRef.current;
     const onPointerDown = (e: PointerEvent) => {
       pointerInteracting = e.clientX;
       canvas.style.cursor = 'grabbing';
@@ -112,7 +125,7 @@ export default function CobeGlobeFallback({ markets, activeSlug, size }: CobeGlo
       canvas.removeEventListener('pointerout', onPointerOut);
       canvas.removeEventListener('pointermove', onPointerMove);
     };
-  }, [size]);
+  }, [size, onFailed]);
 
   const activeMarket = activeSlug ? markets.find(m => m.slug === activeSlug) : null;
 
@@ -120,8 +133,10 @@ export default function CobeGlobeFallback({ markets, activeSlug, size }: CobeGlo
     <>
       <canvas
         ref={canvasRef}
-        style={{ width: size, height: size }}
-        className="relative mx-auto"
+        width={size * 2}
+        height={size * 2}
+        style={{ width: size, height: size, display: 'block' }}
+        className="relative z-[1] mx-auto"
         aria-label="Interactive globe showing Sudonex delivery markets"
       />
       {activeMarket && (

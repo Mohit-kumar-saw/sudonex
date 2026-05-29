@@ -2,14 +2,21 @@
 
 import React, { useEffect, useRef, useState, useCallback, useMemo, Component, type ReactNode } from 'react';
 import dynamic from 'next/dynamic';
+import landPointsJson from '@/data/land-points.json';
 import type { GeoMarket } from '@/lib/geo-markets';
-import { canUseWebGL } from '@/lib/webgl';
+import { getWebGLMode, markThreeWebGLFailed, type WebGLMode } from '@/lib/webgl';
 import CobeGlobeFallback from '@/components/CobeGlobeFallback';
+import StaticGlobeFallback from '@/components/StaticGlobeFallback';
 
 type LandPoint = { lat: number; lng: number; type: 'land' };
 type MarketPoint = GeoMarket & { type: 'market' };
 type GlobePoint = LandPoint | MarketPoint;
 type MarketElement = GeoMarket & { isActive: true };
+
+const LAND_POINTS: LandPoint[] = (landPointsJson as { lat: number; lng: number }[]).map(p => ({
+  ...p,
+  type: 'land' as const,
+}));
 
 const Globe = dynamic(() => import('react-globe.gl'), {
   ssr: false,
@@ -18,7 +25,7 @@ const Globe = dynamic(() => import('react-globe.gl'), {
 
 function GlobeSkeleton() {
   return (
-    <div className="w-full h-full grid place-items-center">
+    <div className="absolute inset-0 grid place-items-center z-[1]">
       <div className="w-[85%] aspect-square rounded-full border border-white/10 animate-pulse" />
     </div>
   );
@@ -68,7 +75,7 @@ function buildActiveMarkerHtml(d: MarketElement) {
 
 function GlobeRing() {
   return (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 100 100" aria-hidden>
+    <svg className="absolute inset-0 w-full h-full pointer-events-none z-[2]" viewBox="0 0 100 100" aria-hidden>
       <circle cx="50" cy="50" r="49.2" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.12" />
       <ellipse cx="50" cy="50" rx="49.2" ry="16" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="0.08" />
       <ellipse cx="50" cy="50" rx="49.2" ry="32" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="0.08" />
@@ -80,17 +87,20 @@ function ThreeGlobe({
   markets,
   activeSlug,
   size,
-  landPoints,
+  onWebGLFailed,
 }: {
   markets: GeoMarket[];
   activeSlug: string | null;
   size: number;
-  landPoints: LandPoint[];
+  onWebGLFailed: () => void;
 }) {
   const globeRef = useRef<{
     pointOfView: (pov?: object, ms?: number) => { altitude: number };
     controls: () => { autoRotate: boolean; autoRotateSpeed: number; enableZoom: boolean };
+    renderer: () => { domElement: HTMLCanvasElement; setSize: (w: number, h: number) => void; setPixelRatio: (r: number) => void };
+    _destructor?: () => void;
   } | null>(null);
+  const failedRef = useRef(false);
 
   const htmlElementsData = useMemo<MarketElement[]>(() => {
     if (!activeSlug) return [];
@@ -99,45 +109,115 @@ function ThreeGlobe({
   }, [markets, activeSlug]);
 
   const globePoints = useMemo<GlobePoint[]>(() => {
-    if (activeSlug) return landPoints;
+    if (activeSlug) return LAND_POINTS;
     const dots: MarketPoint[] = markets.map(m => ({ ...m, type: 'market' as const }));
-    return [...landPoints, ...dots];
-  }, [landPoints, markets, activeSlug]);
+    return [...LAND_POINTS, ...dots];
+  }, [markets, activeSlug]);
 
   const ringsData = useMemo(
     () => (activeSlug ? markets.filter(m => m.slug === activeSlug) : []),
     [markets, activeSlug],
   );
 
+  const reportFailure = useCallback(() => {
+    if (failedRef.current) return;
+    failedRef.current = true;
+    markThreeWebGLFailed();
+    onWebGLFailed();
+  }, [onWebGLFailed]);
+
+  // Swallow Three.js WebGL console errors so Next.js dev overlay does not appear
+  useEffect(() => {
+    const prev = console.error;
+    console.error = (...args: unknown[]) => {
+      const msg = args.map(a => (typeof a === 'string' ? a : '')).join(' ');
+      if (msg.includes('WebGL context could not be created') || msg.includes('Error creating WebGL context')) {
+        reportFailure();
+        return;
+      }
+      prev.apply(console, args as [message?: unknown, ...unknown[]]);
+    };
+    return () => {
+      console.error = prev;
+    };
+  }, [reportFailure]);
+
+  // Dispose WebGL on unmount (React Strict Mode double-mount)
+  useEffect(() => {
+    return () => {
+      try {
+        globeRef.current?._destructor?.();
+      } catch {
+        /* ignore */
+      }
+      globeRef.current = null;
+    };
+  }, []);
+
+  const syncRenderer = useCallback(() => {
+    const globe = globeRef.current;
+    if (!globe || size <= 0) return;
+    try {
+      const renderer = globe.renderer();
+      const canvas = renderer.domElement;
+      const gl =
+        canvas.getContext('webgl2') ||
+        canvas.getContext('webgl') ||
+        canvas.getContext('experimental-webgl');
+      if (!gl) {
+        reportFailure();
+        return;
+      }
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      renderer.setPixelRatio(dpr);
+      renderer.setSize(size, size);
+    } catch {
+      reportFailure();
+    }
+  }, [size, reportFailure]);
+
+  useEffect(() => {
+    syncRenderer();
+  }, [syncRenderer]);
+
   useEffect(() => {
     const globe = globeRef.current;
     if (!globe) return;
-    const controls = globe.controls();
-    if (activeSlug) {
-      controls.autoRotate = false;
-      const market = markets.find(m => m.slug === activeSlug);
-      if (market) {
-        globe.pointOfView(
-          { lat: market.lat, lng: market.lng, altitude: focusAltitude(activeSlug) },
-          900,
-        );
+    try {
+      const controls = globe.controls();
+      if (activeSlug) {
+        controls.autoRotate = false;
+        const market = markets.find(m => m.slug === activeSlug);
+        if (market) {
+          globe.pointOfView(
+            { lat: market.lat, lng: market.lng, altitude: focusAltitude(activeSlug) },
+            900,
+          );
+        }
+      } else {
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 2.2;
+        globe.pointOfView({ lat: 25, lng: 55, altitude: 2.3 }, 1200);
       }
-    } else {
-      controls.autoRotate = true;
-      controls.autoRotateSpeed = 2.2;
-      globe.pointOfView({ lat: 25, lng: 55, altitude: 2.3 }, 1200);
+    } catch {
+      reportFailure();
     }
-  }, [activeSlug, markets]);
+  }, [activeSlug, markets, reportFailure]);
 
   const onGlobeReady = useCallback(() => {
     const globe = globeRef.current;
     if (!globe) return;
-    const controls = globe.controls();
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 2.2;
-    controls.enableZoom = false;
-    globe.pointOfView({ lat: 25, lng: 55, altitude: 2.3 });
-  }, []);
+    syncRenderer();
+    try {
+      const controls = globe.controls();
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 2.2;
+      controls.enableZoom = false;
+      globe.pointOfView({ lat: 25, lng: 55, altitude: 2.3 });
+    } catch {
+      reportFailure();
+    }
+  }, [syncRenderer, reportFailure]);
 
   const htmlElement = useCallback((d: object) => buildActiveMarkerHtml(d as MarketElement), []);
   const pointColor = useCallback(
@@ -149,109 +229,145 @@ function ThreeGlobe({
     [],
   );
 
-  if (globePoints.length === 0 || size <= 0) return null;
-
   return (
-    <Globe
-      // @ts-expect-error react-globe.gl ref typing
-      ref={globeRef}
-      width={size}
-      height={size}
-      animateIn={false}
-      backgroundColor="rgba(0,0,0,0)"
-      rendererConfig={{
-        antialias: false,
-        alpha: true,
-        powerPreference: 'default',
-        failIfMajorPerformanceCaveat: false,
-      }}
-      showAtmosphere={false}
-      showGlobe={false}
-      showGraticule
-      graticuleColor="rgba(255,255,255,0.07)"
-      pointsData={globePoints}
-      pointLat="lat"
-      pointLng="lng"
-      pointColor={pointColor}
-      pointRadius={pointRadius}
-      pointAltitude={0}
-      htmlElementsData={htmlElementsData}
-      htmlLat={(d: object) => (d as GeoMarket).lat}
-      htmlLng={(d: object) => (d as GeoMarket).lng}
-      htmlAltitude={0.005}
-      htmlElement={htmlElement}
-      ringsData={ringsData}
-      ringLat={(d: object) => (d as GeoMarket).lat}
-      ringLng={(d: object) => (d as GeoMarket).lng}
-      ringColor={() => (t: number) => `rgba(255,102,0,${1 - t})`}
-      ringMaxRadius={2.8}
-      ringPropagationSpeed={1.8}
-      ringRepeatPeriod={1400}
-      onGlobeReady={onGlobeReady}
-    />
+    <div className="globe-stage relative z-[1] mx-auto" style={{ width: size, height: size }}>
+      <Globe
+        // @ts-expect-error react-globe.gl ref typing
+        ref={globeRef}
+        width={size}
+        height={size}
+        animateIn={false}
+        waitForGlobeReady={false}
+        backgroundColor="rgba(0,0,0,0)"
+        rendererConfig={{
+          antialias: false,
+          alpha: true,
+          powerPreference: 'default',
+          failIfMajorPerformanceCaveat: false,
+          preserveDrawingBuffer: false,
+        }}
+        showAtmosphere={false}
+        showGlobe={false}
+        showGraticules
+        pointsData={globePoints}
+        pointLat="lat"
+        pointLng="lng"
+        pointColor={pointColor}
+        pointRadius={pointRadius}
+        pointAltitude={0}
+        htmlElementsData={htmlElementsData}
+        htmlLat={(d: object) => (d as GeoMarket).lat}
+        htmlLng={(d: object) => (d as GeoMarket).lng}
+        htmlAltitude={0.005}
+        htmlElement={htmlElement}
+        ringsData={ringsData}
+        ringLat={(d: object) => (d as GeoMarket).lat}
+        ringLng={(d: object) => (d as GeoMarket).lng}
+        ringColor={() => (t: number) => `rgba(255,102,0,${1 - t})`}
+        ringMaxRadius={2.8}
+        ringPropagationSpeed={1.8}
+        ringRepeatPeriod={1400}
+        onGlobeReady={onGlobeReady}
+      />
+    </div>
   );
 }
 
 export default function InteractiveGlobe({ markets, activeSlug }: InteractiveGlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState(340);
-  const [landPoints, setLandPoints] = useState<LandPoint[]>([]);
-  const [mounted, setMounted] = useState(false);
-  const [useFallback, setUseFallback] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    if (!canUseWebGL()) setUseFallback(true);
-  }, []);
-
-  useEffect(() => {
-    fetch('/land-points.json')
-      .then(r => r.json())
-      .then((pts: { lat: number; lng: number }[]) =>
-        setLandPoints(pts.map(p => ({ ...p, type: 'land' as const }))),
-      )
-      .catch(() => setLandPoints([]));
-  }, []);
+  const mountGenRef = useRef(0);
+  const [size, setSize] = useState(0);
+  const [inView, setInView] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [mode, setMode] = useState<WebGLMode | 'loading'>('loading');
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(([entry]) => {
-      setSize(Math.min(entry.contentRect.width, 360));
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setInView(true);
+      },
+      { rootMargin: '120px', threshold: 0.05 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!inView) return;
+    const generation = ++mountGenRef.current;
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        if (generation !== mountGenRef.current) return;
+        setMode(getWebGLMode());
+        setReady(true);
+      });
     });
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+      mountGenRef.current += 1;
+      setReady(false);
+      setMode('loading');
+    };
+  }, [inView]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const measure = () => setSize(Math.min(el.offsetWidth, 360));
+    measure();
+    const ro = new ResizeObserver(measure);
     ro.observe(el);
-    setSize(Math.min(el.offsetWidth, 360));
     return () => ro.disconnect();
   }, []);
 
-  const fallbackGlobe = (
-    <CobeGlobeFallback markets={markets} activeSlug={activeSlug} size={size} />
-  );
+  const handleThreeFailed = useCallback(() => {
+    markThreeWebGLFailed();
+    setMode(getWebGLMode());
+  }, []);
+
+  const handleCobeFailed = useCallback(() => {
+    setMode('none');
+  }, []);
+
+  const globeSize = size || 340;
+  const showGlobe = inView && ready && size > 0 && mode !== 'loading';
+
+  const fallbackLayer =
+    mode === 'cobe' ? (
+      <CobeGlobeFallback
+        markets={markets}
+        activeSlug={activeSlug}
+        size={globeSize}
+        onFailed={handleCobeFailed}
+      />
+    ) : (
+      <StaticGlobeFallback markets={markets} activeSlug={activeSlug} size={globeSize} />
+    );
 
   return (
     <div ref={containerRef} className="relative w-full aspect-square max-w-[360px] mx-auto">
       <GlobeRing />
 
-      {!mounted || size <= 0 ? (
+      {!showGlobe ? (
         <GlobeSkeleton />
-      ) : useFallback || landPoints.length === 0 ? (
-        landPoints.length === 0 && !useFallback ? (
-          <GlobeSkeleton />
-        ) : (
-          fallbackGlobe
-        )
-      ) : (
+      ) : mode === 'three' ? (
         <GlobeErrorBoundary
-          fallback={fallbackGlobe}
-          onError={() => setUseFallback(true)}
+          fallback={<div className="relative z-[1] flex justify-center">{fallbackLayer}</div>}
+          onError={handleThreeFailed}
         >
           <ThreeGlobe
             markets={markets}
             activeSlug={activeSlug}
             size={size}
-            landPoints={landPoints}
+            onWebGLFailed={handleThreeFailed}
           />
         </GlobeErrorBoundary>
+      ) : (
+        <div className="relative z-[1] flex justify-center">{fallbackLayer}</div>
       )}
     </div>
   );

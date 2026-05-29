@@ -122,3 +122,15 @@ body {
 .marquee-border-glow {
   animation: marquee-border-pulse 4s ease-in-out infinite;
 }
+
+/* react-globe.gl / three-render-objects canvas (Chrome visibility) */
+.globe-stage .scene-container,
+.globe-stage .scene-container > div {
+  width: 100% !important;
+  height: 100% !important;
+}
+.globe-stage .scene-container canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
