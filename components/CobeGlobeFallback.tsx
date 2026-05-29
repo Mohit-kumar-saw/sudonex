@@ -11,10 +11,17 @@ interface CobeGlobeFallbackProps {
   activeSlug: string | null;
   size: number;
   onFailed?: () => void;
+  autoRotateSpeed?: number;
 }
 
 /** Same dotted-globe look when Three.js WebGL is unavailable */
-export default function CobeGlobeFallback({ markets, activeSlug, size, onFailed }: CobeGlobeFallbackProps) {
+export default function CobeGlobeFallback({
+  markets,
+  activeSlug,
+  size,
+  onFailed,
+  autoRotateSpeed = 2.2,
+}: CobeGlobeFallbackProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const activeRef = useRef(activeSlug);
   const marketsRef = useRef(markets);
@@ -81,7 +88,7 @@ export default function CobeGlobeFallback({ markets, activeSlug, size, onFailed 
         phi += (targetPhi - phi) * 0.04;
         theta += (targetTheta - theta) * 0.04;
       } else if (pointerInteracting === null) {
-        phi += 0.018;
+        phi += 0.008 * autoRotateSpeed;
         theta += (0.25 - theta) * 0.02;
       }
 
@@ -125,7 +132,7 @@ export default function CobeGlobeFallback({ markets, activeSlug, size, onFailed 
       canvas.removeEventListener('pointerout', onPointerOut);
       canvas.removeEventListener('pointermove', onPointerMove);
     };
-  }, [size, onFailed]);
+  }, [size, onFailed, autoRotateSpeed]);
 
   const activeMarket = activeSlug ? markets.find(m => m.slug === activeSlug) : null;
 

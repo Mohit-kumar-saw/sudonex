@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
+import HeroGlobe from '@/components/HeroGlobe';
 import { ArrowRight, Sparkles, ShieldCheck, Cpu } from 'lucide-react';
 import { useContactModal } from '@/components/ContactModal';
 
@@ -99,22 +99,14 @@ export default function AnimatedHero({
             </motion.div>
           </div>
 
-          {/* Right: hero graphic */}
+          {/* Right: rotating globe */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="relative hidden lg:flex items-center justify-center"
+            className="relative flex items-center justify-center"
           >
-            <div className="relative w-full max-w-md aspect-square">
-              <Image
-                src="/hero-graphic.svg"
-                alt="Sudonex growth"
-                fill
-                className="object-contain drop-shadow-2xl"
-                priority
-              />
-            </div>
+            <HeroGlobe />
           </motion.div>
         </div>
       </div>

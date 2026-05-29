@@ -51,6 +51,13 @@ class GlobeErrorBoundary extends Component<
 interface InteractiveGlobeProps {
   markets: GeoMarket[];
   activeSlug: string | null;
+  /** Skip intersection observer — use in hero (above the fold) */
+  mountImmediately?: boolean;
+  maxSize?: number;
+  /** Land dots only, no market markers */
+  landOnly?: boolean;
+  autoRotateSpeed?: number;
+  showRing?: boolean;
 }
 
 function focusAltitude(slug: string): number {
@@ -88,16 +95,21 @@ function ThreeGlobe({
   activeSlug,
   size,
   onWebGLFailed,
+  landOnly,
+  autoRotateSpeed = 2.2,
 }: {
   markets: GeoMarket[];
   activeSlug: string | null;
   size: number;
   onWebGLFailed: () => void;
+  landOnly?: boolean;
+  autoRotateSpeed?: number;
 }) {
   const globeRef = useRef<{
     pointOfView: (pov?: object, ms?: number) => { altitude: number };
     controls: () => { autoRotate: boolean; autoRotateSpeed: number; enableZoom: boolean };
     renderer: () => { domElement: HTMLCanvasElement; setSize: (w: number, h: number) => void; setPixelRatio: (r: number) => void };
+    resumeAnimation: () => void;
     _destructor?: () => void;
   } | null>(null);
   const failedRef = useRef(false);
@@ -109,10 +121,10 @@ function ThreeGlobe({
   }, [markets, activeSlug]);
 
   const globePoints = useMemo<GlobePoint[]>(() => {
-    if (activeSlug) return LAND_POINTS;
+    if (landOnly || activeSlug) return LAND_POINTS;
     const dots: MarketPoint[] = markets.map(m => ({ ...m, type: 'market' as const }));
     return [...LAND_POINTS, ...dots];
-  }, [markets, activeSlug]);
+  }, [markets, activeSlug, landOnly]);
 
   const ringsData = useMemo(
     () => (activeSlug ? markets.filter(m => m.slug === activeSlug) : []),
@@ -176,6 +188,24 @@ function ThreeGlobe({
     }
   }, [size, reportFailure]);
 
+  const applyAutoRotate = useCallback(() => {
+    const globe = globeRef.current;
+    if (!globe) return;
+    try {
+      const controls = globe.controls();
+      if (activeSlug) {
+        controls.autoRotate = false;
+        return;
+      }
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = autoRotateSpeed;
+      controls.enableZoom = false;
+      globe.resumeAnimation();
+    } catch {
+      reportFailure();
+    }
+  }, [activeSlug, autoRotateSpeed, reportFailure]);
+
   useEffect(() => {
     syncRenderer();
   }, [syncRenderer]);
@@ -184,9 +214,8 @@ function ThreeGlobe({
     const globe = globeRef.current;
     if (!globe) return;
     try {
-      const controls = globe.controls();
       if (activeSlug) {
-        controls.autoRotate = false;
+        applyAutoRotate();
         const market = markets.find(m => m.slug === activeSlug);
         if (market) {
           globe.pointOfView(
@@ -195,29 +224,33 @@ function ThreeGlobe({
           );
         }
       } else {
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 2.2;
+        applyAutoRotate();
         globe.pointOfView({ lat: 25, lng: 55, altitude: 2.3 }, 1200);
       }
     } catch {
       reportFailure();
     }
-  }, [activeSlug, markets, reportFailure]);
+  }, [activeSlug, markets, reportFailure, applyAutoRotate]);
+
+  // Keep auto-rotate on when idle (controls can reset after POV tweens)
+  useEffect(() => {
+    if (activeSlug) return;
+    applyAutoRotate();
+    const id = setInterval(applyAutoRotate, 1500);
+    return () => clearInterval(id);
+  }, [activeSlug, applyAutoRotate]);
 
   const onGlobeReady = useCallback(() => {
     const globe = globeRef.current;
     if (!globe) return;
     syncRenderer();
     try {
-      const controls = globe.controls();
-      controls.autoRotate = true;
-      controls.autoRotateSpeed = 2.2;
-      controls.enableZoom = false;
+      applyAutoRotate();
       globe.pointOfView({ lat: 25, lng: 55, altitude: 2.3 });
     } catch {
       reportFailure();
     }
-  }, [syncRenderer, reportFailure]);
+  }, [syncRenderer, reportFailure, applyAutoRotate]);
 
   const htmlElement = useCallback((d: object) => buildActiveMarkerHtml(d as MarketElement), []);
   const pointColor = useCallback(
@@ -273,15 +306,27 @@ function ThreeGlobe({
   );
 }
 
-export default function InteractiveGlobe({ markets, activeSlug }: InteractiveGlobeProps) {
+export default function InteractiveGlobe({
+  markets,
+  activeSlug,
+  mountImmediately = false,
+  maxSize = 360,
+  landOnly = false,
+  autoRotateSpeed = 2.2,
+  showRing = true,
+}: InteractiveGlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mountGenRef = useRef(0);
   const [size, setSize] = useState(0);
-  const [inView, setInView] = useState(false);
+  const [inView, setInView] = useState(mountImmediately);
   const [ready, setReady] = useState(false);
   const [mode, setMode] = useState<WebGLMode | 'loading'>('loading');
 
   useEffect(() => {
+    if (mountImmediately) {
+      setInView(true);
+      return;
+    }
     const el = containerRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
@@ -292,7 +337,7 @@ export default function InteractiveGlobe({ markets, activeSlug }: InteractiveGlo
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [mountImmediately]);
 
   useEffect(() => {
     if (!inView) return;
@@ -317,12 +362,12 @@ export default function InteractiveGlobe({ markets, activeSlug }: InteractiveGlo
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const measure = () => setSize(Math.min(el.offsetWidth, 360));
+    const measure = () => setSize(Math.min(el.offsetWidth, maxSize));
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [maxSize]);
 
   const handleThreeFailed = useCallback(() => {
     markThreeWebGLFailed();
@@ -333,7 +378,7 @@ export default function InteractiveGlobe({ markets, activeSlug }: InteractiveGlo
     setMode('none');
   }, []);
 
-  const globeSize = size || 340;
+  const globeSize = size || maxSize;
   const showGlobe = inView && ready && size > 0 && mode !== 'loading';
 
   const fallbackLayer =
@@ -343,14 +388,19 @@ export default function InteractiveGlobe({ markets, activeSlug }: InteractiveGlo
         activeSlug={activeSlug}
         size={globeSize}
         onFailed={handleCobeFailed}
+        autoRotateSpeed={autoRotateSpeed}
       />
     ) : (
       <StaticGlobeFallback markets={markets} activeSlug={activeSlug} size={globeSize} />
     );
 
   return (
-    <div ref={containerRef} className="relative w-full aspect-square max-w-[360px] mx-auto">
-      <GlobeRing />
+    <div
+      ref={containerRef}
+      className="relative w-full aspect-square mx-auto"
+      style={{ maxWidth: maxSize }}
+    >
+      {showRing && <GlobeRing />}
 
       {!showGlobe ? (
         <GlobeSkeleton />
@@ -364,6 +414,8 @@ export default function InteractiveGlobe({ markets, activeSlug }: InteractiveGlo
             activeSlug={activeSlug}
             size={size}
             onWebGLFailed={handleThreeFailed}
+            landOnly={landOnly}
+            autoRotateSpeed={autoRotateSpeed}
           />
         </GlobeErrorBoundary>
       ) : (
