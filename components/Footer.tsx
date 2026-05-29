@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import { NAV } from '@/lib/content';
 import { Mail, MapPin, ShieldCheck, AlertTriangle, Phone, Instagram, Facebook, Linkedin } from 'lucide-react';
-import { useContactModal } from '@/components/ContactModal';
 import Logo from '@/components/Logo';
 
 const cols = [
@@ -13,8 +12,6 @@ const cols = [
 ];
 
 export default function Footer() {
-  const { openModal } = useContactModal();
-
   return (
     <footer className="relative mt-32 border-t border-white/5 bg-bg-deep overflow-hidden">
       <div className="hero-curve-orange w-[400px] h-[400px] -top-40 -left-40 opacity-30" style={{ borderRadius: '50%' }} />
@@ -101,7 +98,7 @@ export default function Footer() {
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-ink-dim">
             <Link href="/about-us/" className="hover:text-white">About</Link>
             <Link href="/resources/" className="hover:text-white">Resources</Link>
-            <button onClick={openModal} className="hover:text-white cursor-pointer">Contact</button>
+            <Link href="/contact/" className="hover:text-white">Contact</Link>
             <Link href="/about-us/#privacy" className="hover:text-white">Privacy</Link>
             <Link href="/about-us/#terms" className="hover:text-white">Terms</Link>
           </div>

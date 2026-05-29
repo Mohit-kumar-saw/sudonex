@@ -8,8 +8,6 @@ import RelatedLinks from '@/components/RelatedLinks';
 import FAQAccordion from '@/components/FAQAccordion';
 import CTABlock from '@/components/CTABlock';
 import GeoStrip from '@/components/GeoStrip';
-import AuthorByline from '@/components/AuthorByline';
-import TrustBadges from '@/components/TrustBadges';
 import Citations from '@/components/Citations';
 import EditorialStandards from '@/components/EditorialStandards';
 import { authorsForPath, organizationSchema, personSchema } from '@/lib/authors';
@@ -107,9 +105,6 @@ export default async function Page({ params }: { params: Promise<{ slug: string[
         primaryCta={{ label: 'Talk to engineering', href: '/contact/' }}
         secondaryCta={page.layer !== 'resource' ? { label: 'See related work', href: '/case-studies/' } : undefined}
       />
-
-      <AuthorByline author={author} reviewer={reviewer} published={published} lastUpdated={lastUpdated} />
-      <TrustBadges />
 
       <ArticleBody html={page.body_html} toc={page.toc} />
 

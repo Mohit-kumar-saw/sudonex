@@ -8,8 +8,6 @@ import IndustriesStrip from '@/components/IndustriesStrip';
 import TrustStrip from '@/components/TrustStrip';
 import GeoStrip from '@/components/GeoStrip';
 import FAQAccordion from '@/components/FAQAccordion';
-import AuthorByline from '@/components/AuthorByline';
-import { authorsForPath } from '@/lib/authors';
 
 export const metadata: Metadata = {
   title: 'Sudonex | iGaming Development Company — Casino, Slots, Sports Exchange',
@@ -19,7 +17,6 @@ export const metadata: Metadata = {
 
 export default function Home() {
   const home = getPage('/');
-  const { author, reviewer, published, lastUpdated } = authorsForPath('/');
   return (
     <>
       <AnimatedHero
@@ -30,7 +27,6 @@ export default function Home() {
         secondaryCta={{ label: 'Explore services', href: '/services/' }}
       />
       <Stats />
-      <AuthorByline author={author} reviewer={reviewer} published={published} lastUpdated={lastUpdated} />
       <ServiceCards />
       <IndustriesStrip />
       <GeoStrip />

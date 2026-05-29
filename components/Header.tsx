@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { NAV } from '@/lib/content';
-import { useContactModal } from '@/components/ContactModal';
 import Logo from '@/components/Logo';
 
 const MEGA = [
@@ -17,7 +16,6 @@ export default function Header() {
   const [open, setOpen] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { openModal } = useContactModal();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -66,12 +64,9 @@ export default function Header() {
             </div>
           ))}
           <Link href="/case-studies/" className="px-3 py-2 text-sm text-white hover:text-brand-400 transition-colors">Work</Link>
-          <button
-            onClick={openModal}
-            className="px-3 py-2 text-sm text-white hover:text-brand-400 transition-colors cursor-pointer"
-          >
+          <Link href="/contact/" className="btn-primary ml-2 py-2 px-4 text-sm">
             Contact
-          </button>
+          </Link>
         </nav>
 
         <button
@@ -98,12 +93,13 @@ export default function Header() {
                 <Link key={it.path} href={it.path} onClick={() => setMobileOpen(false)} className="block py-2.5 text-ink-muted hover:text-white">{it.label}</Link>
               ))}
               <Link href="/case-studies/" onClick={() => setMobileOpen(false)} className="block py-2.5 text-ink-muted hover:text-white">Work</Link>
-              <button
-                onClick={() => { setMobileOpen(false); openModal(); }}
-                className="btn-primary mt-4 w-full justify-center cursor-pointer"
+              <Link
+                href="/contact/"
+                onClick={() => setMobileOpen(false)}
+                className="btn-primary mt-4 w-full justify-center"
               >
                 Contact
-              </button>
+              </Link>
             </div>
           </motion.div>
         )}

@@ -12,8 +12,8 @@ export default function Breadcrumbs({ path, h1 }: { path: string; h1: string }) 
     crumbs.push({ label: last ? h1 : seg.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), href: cur + '/' });
   });
   return (
-    <nav aria-label="Breadcrumb" className="max-w-3xl mx-auto px-6 pt-8">
-      <ol className="flex items-center flex-wrap gap-1 text-xs text-ink-dim">
+    <nav aria-label="Breadcrumb" className="max-w-7xl mx-auto px-6 pt-4 pb-1">
+      <ol className="flex items-center flex-wrap gap-1 text-xs text-ink-dim justify-start">
         {crumbs.map((c, i) => (
           <li key={i} className="flex items-center gap-1">
             {i > 0 && <ChevronRight size={12} className="text-ink-dim/50" />}

@@ -3,16 +3,11 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import HeroGlobe from '@/components/HeroGlobe';
 import { ArrowRight, Sparkles, ShieldCheck, Cpu } from 'lucide-react';
-import { useContactModal } from '@/components/ContactModal';
-
 export default function AnimatedHero({
   eyebrow, title, subtitle, primaryCta, secondaryCta,
 }: { eyebrow?: string; title: string; subtitle?: string; primaryCta?: { label: string; href: string }; secondaryCta?: { label: string; href: string }; }) {
   const words = title.split(' ');
-  const { openModal } = useContactModal();
   const highlightStart = Math.floor(words.length / 2);
-
-  const isContactHref = (href: string) => href.replace(/\/$/, '') === '/contact';
 
   return (
     <section className="relative overflow-hidden pt-8 lg:pt-12 pb-16 lg:pb-20">
@@ -70,20 +65,12 @@ export default function AnimatedHero({
               className="flex flex-wrap gap-3"
             >
               {primaryCta && (
-                isContactHref(primaryCta.href) ? (
-                  <button onClick={openModal} className="btn-primary cursor-pointer">
-                    {primaryCta.label} <ArrowRight size={16} />
-                  </button>
-                ) : (
-                  <Link href={primaryCta.href} className="btn-primary">{primaryCta.label} <ArrowRight size={16} /></Link>
-                )
+                <Link href={primaryCta.href} className="btn-primary">
+                  {primaryCta.label} <ArrowRight size={16} />
+                </Link>
               )}
               {secondaryCta && (
-                isContactHref(secondaryCta.href) ? (
-                  <button onClick={openModal} className="btn-secondary cursor-pointer">{secondaryCta.label}</button>
-                ) : (
-                  <Link href={secondaryCta.href} className="btn-secondary">{secondaryCta.label}</Link>
-                )
+                <Link href={secondaryCta.href} className="btn-secondary">{secondaryCta.label}</Link>
               )}
             </motion.div>
 
