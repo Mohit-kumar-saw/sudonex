@@ -10,8 +10,8 @@ export default function FAQAccordion({ items }: { items: { q: string; a: string 
     <section className="py-16">
       <div className="max-w-3xl mx-auto px-6">
         <div className="text-center mb-10">
-          <p className="text-xs uppercase tracking-widest text-brand-300 mb-3">FAQ</p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold">Frequently Asked Questions</h2>
+          <p className="text-xs uppercase tracking-widest text-brand-500 mb-3">FAQ</p>
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-white">Frequently Asked Questions</h2>
         </div>
         <div className="space-y-3">
           {items.map((it, i) => {
@@ -19,8 +19,8 @@ export default function FAQAccordion({ items }: { items: { q: string; a: string 
             return (
               <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.04 }} className="glow-card overflow-hidden">
                 <button onClick={() => setOpenIdx(open ? null : i)} className="w-full text-left px-6 py-5 flex items-center justify-between gap-4">
-                  <span className="font-medium text-ink">{it.q}</span>
-                  <motion.div animate={{ rotate: open ? 45 : 0 }} className="shrink-0 w-8 h-8 rounded-full bg-gradient-brand grid place-items-center">
+                  <span className="font-medium text-white">{it.q}</span>
+                  <motion.div animate={{ rotate: open ? 45 : 0 }} className="shrink-0 w-8 h-8 rounded-lg bg-brand-500 grid place-items-center">
                     <Plus size={16} className="text-white" />
                   </motion.div>
                 </button>

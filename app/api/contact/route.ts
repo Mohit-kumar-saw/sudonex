@@ -30,7 +30,7 @@ ${message}
       `,
       html: `
         <div style="font-family: sans-serif; padding: 20px; color: #333; max-width: 600px; border: 1px solid #eee; border-radius: 8px;">
-          <h2 style="color: #7a3fff; border-bottom: 2px solid #7a3fff; padding-bottom: 8px;">New Sudonex Project Inquiry</h2>
+          <h2 style="color: #FF6600; border-bottom: 2px solid #FF6600; padding-bottom: 8px;">New Sudonex Project Inquiry</h2>
           <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
             <tr>
               <td style="padding: 6px 0; font-weight: bold; width: 120px;">Name:</td>
@@ -53,7 +53,7 @@ ${message}
               <td style="padding: 6px 0;">${budget || 'N/A'}</td>
             </tr>
           </table>
-          <h3 style="color: #06b6d4; margin-top: 20px; border-bottom: 1px solid #eee; padding-bottom: 4px;">Message</h3>
+          <h3 style="color: #FF8533; margin-top: 20px; border-bottom: 1px solid #eee; padding-bottom: 4px;">Message</h3>
           <p style="white-space: pre-wrap; line-height: 1.6; color: #555;">${message}</p>
         </div>
       `,

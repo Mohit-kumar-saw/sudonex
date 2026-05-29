@@ -4,13 +4,13 @@ import { motion } from 'framer-motion';
 import { Gamepad2, Dice5, Trophy, Plug, Palette, Wrench, Rocket, ArrowUpRight } from 'lucide-react';
 
 const ICONS: Record<string, any> = {
-  '/casino-app-development/': { icon: Gamepad2, accent: 'from-brand-500 to-cyan-500' },
-  '/slot-game-development/': { icon: Dice5, accent: 'from-gold-400 to-casino-red' },
-  '/sports-exchange-development/': { icon: Trophy, accent: 'from-cyan-500 to-emerald-400' },
-  '/igaming-api-integration/': { icon: Plug, accent: 'from-brand-400 to-brand-700' },
-  '/igaming-ui-ux-design/': { icon: Palette, accent: 'from-gold-300 to-gold-600' },
-  '/igaming-maintenance-debugging/': { icon: Wrench, accent: 'from-emerald-500 to-cyan-500' },
-  '/igaming-mvp-consultancy/': { icon: Rocket, accent: 'from-casino-red to-brand-600' },
+  '/casino-app-development/': { icon: Gamepad2 },
+  '/slot-game-development/': { icon: Dice5 },
+  '/sports-exchange-development/': { icon: Trophy },
+  '/igaming-api-integration/': { icon: Plug },
+  '/igaming-ui-ux-design/': { icon: Palette },
+  '/igaming-maintenance-debugging/': { icon: Wrench },
+  '/igaming-mvp-consultancy/': { icon: Rocket },
 };
 
 const SERVICES = [
@@ -29,8 +29,8 @@ export default function ServiceCards() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-14">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <p className="text-xs uppercase tracking-widest text-brand-300 mb-3">What We Build</p>
-            <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">iGaming engineering, end-to-end</h2>
+            <p className="text-xs uppercase tracking-widest text-brand-500 mb-3">What We Build</p>
+            <h2 className="font-display text-3xl md:text-5xl font-bold mb-4 text-white">iGaming engineering, <span className="text-brand-500">end-to-end</span></h2>
             <p className="text-ink-muted max-w-2xl mx-auto">Every product surface for licensed operators, startups, and game studios — built once, built right.</p>
           </motion.div>
         </div>
@@ -42,12 +42,12 @@ export default function ServiceCards() {
             return (
               <motion.div key={s.path} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: idx * 0.05 }}>
                 <Link href={s.path} className="glow-card block p-6 h-full group">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${meta?.accent || 'from-brand-500 to-cyan-500'} grid place-items-center mb-4 shadow-glow-brand group-hover:scale-110 transition-transform`}>
-                    <Icon size={22} className="text-white" />
+                  <div className="w-12 h-12 rounded-lg bg-brand-500/10 border border-brand-500/20 grid place-items-center mb-4 group-hover:bg-brand-500 group-hover:border-brand-500 transition-all">
+                    <Icon size={22} className="text-brand-500 group-hover:text-white transition-colors" />
                   </div>
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-display font-semibold text-lg">{s.title}</h3>
-                    <ArrowUpRight size={16} className="text-ink-dim group-hover:text-brand-300 transition-colors" />
+                    <h3 className="font-display font-semibold text-lg text-white">{s.title}</h3>
+                    <ArrowUpRight size={16} className="text-ink-dim group-hover:text-brand-500 transition-colors" />
                   </div>
                   <p className="text-sm text-ink-muted leading-relaxed">{s.desc}</p>
                 </Link>

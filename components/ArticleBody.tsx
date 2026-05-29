@@ -33,8 +33,8 @@ export default function ArticleBody({ html, toc }: { html: string; toc?: { text:
           <aside className="hidden lg:block">
             <div className="sticky top-24 glow-card p-5">
               <div className="flex items-center gap-2 mb-3">
-                <List size={14} className="text-brand-300" />
-                <p className="text-xs uppercase tracking-widest text-brand-300">On this page</p>
+                <List size={14} className="text-brand-500" />
+                <p className="text-xs uppercase tracking-widest text-brand-500">On this page</p>
               </div>
               <ul className="space-y-1.5 text-sm border-l border-white/8">
                 {toc.map((t, i) => {
@@ -43,7 +43,7 @@ export default function ArticleBody({ html, toc }: { html: string; toc?: { text:
                   return (
                     <li key={i}>
                       <a href={t.href}
-                        className={`block pl-4 -ml-px py-1 border-l-2 transition-all ${isActive ? 'border-brand-400 text-ink font-medium' : 'border-transparent text-ink-muted hover:text-ink'}`}>
+                        className={`block pl-4 -ml-px py-1 border-l-2 transition-all ${isActive ? 'border-brand-500 text-white font-medium' : 'border-transparent text-ink-muted hover:text-white'}`}>
                         {t.text}
                       </a>
                     </li>

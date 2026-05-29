@@ -14,11 +14,10 @@ const TRUST = [
 export default function TrustStrip() {
   return (
     <section className="relative py-20">
-      <div className="absolute inset-0 bg-mesh-2 opacity-40" />
       <div className="relative max-w-7xl mx-auto px-6">
         <div className="text-center mb-12">
-          <p className="text-xs uppercase tracking-widest text-gold-300 mb-3">Trust & Compliance</p>
-          <h2 className="font-display text-3xl md:text-5xl font-bold">The standards your regulator expects</h2>
+          <p className="text-xs uppercase tracking-widest text-brand-500 mb-3">Trust & Compliance</p>
+          <h2 className="font-display text-3xl md:text-5xl font-bold text-white">The standards your <span className="text-brand-500">regulator expects</span></h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {TRUST.map((t, i) => {
@@ -26,8 +25,10 @@ export default function TrustStrip() {
             return (
               <motion.div key={t.label} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
                 className="glow-card p-5 text-center">
-                <Icon size={24} className="mx-auto mb-3 text-gold-400" />
-                <p className="font-semibold text-sm text-ink mb-1">{t.label}</p>
+                <div className="w-10 h-10 rounded-lg bg-brand-500/10 border border-brand-500/20 grid place-items-center mx-auto mb-3">
+                  <Icon size={20} className="text-brand-500" />
+                </div>
+                <p className="font-semibold text-sm text-white mb-1">{t.label}</p>
                 <p className="text-xs text-ink-dim">{t.sub}</p>
               </motion.div>
             );

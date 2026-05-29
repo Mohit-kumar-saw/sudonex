@@ -17,8 +17,8 @@ export default function EditorialStandards() {
       <section id="editorial-standards" className="py-20 scroll-mt-24">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-10">
-            <p className="text-xs uppercase tracking-widest text-cyan-300 mb-3">E-E-A-T</p>
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">Editorial standards</h2>
+            <p className="text-xs uppercase tracking-widest text-brand-500 mb-3">E-E-A-T</p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 text-white">Editorial standards</h2>
             <p className="text-ink-muted max-w-2xl mx-auto">How Sudonex researches, writes, reviews, dates, and corrects every page on this site.</p>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
@@ -27,7 +27,7 @@ export default function EditorialStandards() {
               return (
                 <motion.div key={i} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
                   className="glow-card p-6">
-                  <Icon size={20} className="text-brand-300 mb-3" />
+                  <Icon size={20} className="text-brand-500 mb-3" />
                   <h3 className="font-display font-semibold text-base mb-2">{p.title}</h3>
                   <p className="text-sm text-ink-muted leading-relaxed">{p.body}</p>
                 </motion.div>
@@ -53,7 +53,7 @@ export default function EditorialStandards() {
       <section id="corrections" className="py-12 scroll-mt-24">
         <div className="max-w-3xl mx-auto px-6 glow-card p-7">
           <h3 className="font-display text-xl font-bold mb-3">Corrections policy</h3>
-          <p className="text-sm text-ink-muted mb-3">Sudonex publishes a corrections log when factual claims change after publication. Email <a href="mailto:corrections@sudonex.com" className="text-brand-300 hover:text-brand-200">corrections@sudonex.com</a> to flag an error. Material corrections are appended to the bottom of the page with the date.</p>
+          <p className="text-sm text-ink-muted mb-3">Sudonex publishes a corrections log when factual claims change after publication. Email <a href="mailto:corrections@sudonex.com" className="text-brand-500 hover:text-brand-400">corrections@sudonex.com</a> to flag an error. Material corrections are appended to the bottom of the page with the date.</p>
           <p className="text-sm text-ink-muted">For regulatory-sensitive content (licensing requirements, certification thresholds), readers should always verify with the named regulator or with licensed counsel in the relevant jurisdiction. Sudonex content is informational, not legal advice.</p>
         </div>
       </section>

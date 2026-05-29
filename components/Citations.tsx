@@ -44,16 +44,16 @@ export default function Citations({ cluster }: { cluster: string }) {
     <section aria-label="Sources & references" className="max-w-3xl mx-auto px-6 py-10">
       <div className="glow-card p-6">
         <div className="flex items-center gap-2 mb-4">
-          <BookOpen size={16} className="text-cyan-400" />
-          <h2 className="font-display text-lg font-semibold">Sources & references</h2>
+          <BookOpen size={16} className="text-brand-500" />
+          <h2 className="font-display text-lg font-semibold text-white">Sources & references</h2>
         </div>
         <p className="text-xs text-ink-muted mb-4">This article references the following authoritative sources. We update citations as standards evolve.</p>
         <ul className="space-y-2.5">
           {sources.map((s, i) => (
             <li key={i} className="flex items-start gap-2 text-sm">
-              <span className="text-brand-300 font-mono text-xs mt-0.5">[{i + 1}]</span>
+              <span className="text-brand-500 font-mono text-xs mt-0.5">[{i + 1}]</span>
               <div className="min-w-0">
-                <a href={s.url} target="_blank" rel="noopener noreferrer nofollow" className="text-ink hover:text-brand-300 inline-flex items-center gap-1">
+                <a href={s.url} target="_blank" rel="noopener noreferrer nofollow" className="text-white hover:text-brand-400 inline-flex items-center gap-1">
                   {s.title} <ExternalLink size={11} className="shrink-0" />
                 </a>
                 <p className="text-xs text-ink-dim">{s.org}</p>

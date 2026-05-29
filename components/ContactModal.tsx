@@ -118,11 +118,9 @@ function ContactModal() {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 15 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-bg-elev p-6 md:p-8 shadow-2xl"
+        className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-brand-500/20 bg-bg-elev p-6 md:p-8 shadow-2xl"
       >
-        {/* Glow Effects inside Modal */}
-        <div className="orb orb-purple w-64 h-64 -top-20 -left-20 opacity-30" />
-        <div className="orb orb-cyan w-64 h-64 -bottom-20 -right-20 opacity-20" />
+        <div className="hero-curve-orange w-64 h-64 -top-20 -left-20 opacity-20" style={{ borderRadius: '50%' }} />
 
         {/* Close Button */}
         <button
@@ -153,8 +151,8 @@ function ContactModal() {
             </motion.div>
           ) : (
             <>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-400/20 text-xs text-brand-300 font-medium mb-4">
-                <Sparkles size={12} className="text-gold-400" /> Technical Scoping
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-xs text-brand-400 font-medium mb-4">
+                <Sparkles size={12} className="text-brand-500" /> Technical Scoping
               </div>
               <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
                 Start your build
